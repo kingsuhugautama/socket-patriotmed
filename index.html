@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tes Antrian</title>
+</head>
+<body>
+  <h1>Tes Antrian</h1>
+  <button id="joinButton">Join Queue</button>
+  <button id="callButton">Call Next Number</button>
+  <ul id="queueList"></ul>
+  
+  <div id="notification"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    const joinButton = document.getElementById('joinButton');
+    const callButton = document.getElementById('callButton');
+    const queueList = document.getElementById('queueList');
+    const notification = document.getElementById('notification');
+
+    joinButton.addEventListener('click', () => {
+      socket.emit('joinQueue');
+    });
+    
+
+    callButton.addEventListener('click', () => {
+      socket.emit('callNextNumber');
+    });
+
+    socket.on('queueUpdate', (queue) => {
+      queueList.innerHTML = queue.map((item, index) => `<li>${index + 1}. User ${item}</li>`).join('');
+    });
+
+    socket.on('yourTurn', (number) => {
+      notification.innerHTML = `Your turn! Please proceed to counter ${number}.`;
+    });
+  </script>
+</body>
+</html>
